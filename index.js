@@ -3,7 +3,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const grid = document.querySelector(".grid");
     let width = 10;
     let bombAmount = 20;
+    let flags = 0;
     let squares = [];
+    let isGameOver = false;
 
     // create game board
     function createBoard() {
@@ -25,6 +27,12 @@ document.addEventListener('DOMContentLoaded', () => {
             square.addEventListener("click", function(e) {
                 click(square);
             })
+
+            square.oncontextmenu = function(e) {
+                console.log("adding a flag?");
+                e.preventDefault();
+                addFlag(square);
+            }
         }
 
         // add numbers to board
@@ -76,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 squares[i].setAttribute("data", total);
-                squares[i].innerHTML = total;
+                // squares[i].innerHTML = total;
 
                 console.log(squares[i]);
             }
@@ -86,10 +94,41 @@ document.addEventListener('DOMContentLoaded', () => {
     createBoard();
 
 
+    function addFlag(square) {
+        if(isGameOver) {
+            return;
+        }
+        if(!square.classList.contains("checked") && flags < bombAmount) {
+            //toggle if square has flag
+            if(!square.classList.contains("flag")) {
+                square.classList.add("flag");
+                square.innerHTML = "🚩";
+                flags++;
+                checkForWin();
+            } else {
+                square.classList.remove("flag");
+                square.innerHTML = "";
+                flags--;
+            }
+        }
+
+    }
+
+
     // click on square actions
     function click(square) {
+        let currentId = square.id;
+
+        if(isGameOver) {
+            return;
+        }
+
+        if(square.classList.contains("checked") || square.classList.contains("flag")) {
+            return;
+        }
+
         if(square.classList.contains("bomb")) {
-            alert("game over");
+            gameOver(square);
         } else {
             let total = square.getAttribute("data");
             if (total != 0) {
@@ -97,10 +136,109 @@ document.addEventListener('DOMContentLoaded', () => {
                 square.innerHTML = total;
                 return;
             }
+
+            checkSquare(square, currentId);
+
         }
+
+        square.classList.add("checked");
     }
 
+    //check neighboring squares once square is clicked
+    function checkSquare(square, currentId) {
+        const isLeftEdge = (currentId % width === 0);
+        const isRightEdge = (currentId % width === width - 1);
+
+        setTimeout(() => {
+
+            // check squares recursively to the left direction
+            if(currentId > 0 && !isLeftEdge) {
+                const newId = squares[parseInt(currentId) - 1].id;
+                const newSquare = document.getElementById(newId);
+                click(newSquare);
+            }
+
+            // check squares recursively to the upper left direction
+            if(currentId > (width - 1) && !isLeftEdge) {
+                const newId = squares[parseInt(currentId) - 1 - width].id;
+                const newSquare = document.getElementById(newId);
+                click(newSquare);
+            }
+
+            // check squares recursively to the top
+            if(currentId > (width - 1)) {
+                const newId = squares[parseInt(currentId) - width].id;
+                const newSquare = document.getElementById(newId);
+                click(newSquare);
+            }
+
+            // check squares recursively to the upper right
+            if(currentId > (width - 1) && !isRightEdge) {
+                const newId = squares[parseInt(currentId) + 1 - width].id;
+                const newSquare = document.getElementById(newId);
+                click(newSquare);
+            }
+
+            // check squares recursively to the right
+            if(currentId < 99 && !isRightEdge) {
+                const newId = squares[parseInt(currentId) + 1 ].id;
+                const newSquare = document.getElementById(newId);
+                click(newSquare);
+            }
+            
+            // check squares recursively to the lower right
+            if(currentId < 90 && !isRightEdge) {
+                const newId = squares[parseInt(currentId) + 1 + width].id;
+                const newSquare = document.getElementById(newId);
+                click(newSquare);
+            }
+
+            
+            // check squares recursively to the bottom
+            if(currentId < 90) {
+                const newId = squares[parseInt(currentId) + width].id;
+                const newSquare = document.getElementById(newId);
+                click(newSquare);
+            }
+
+            // check squares recursively to the lower left
+            if(currentId < 90 && !isLeftEdge) {
+                const newId = squares[parseInt(currentId) - 1 + width].id;
+                const newSquare = document.getElementById(newId);
+                click(newSquare);
+            }
 
 
+
+
+
+        }, 10);
+    }
+
+    function gameOver(square) {
+        isGameOver = true;
+
+        // show all the bombs
+        squares.forEach(square => {
+            if(square.classList.contains("bomb")) {
+                square.innerHTML = "💣";
+            }
+        })
+    }
+
+    function checkForWin() {
+        let matches = 0;
+
+        for(let i = 0; i < squares.length; i++) {
+            if(squares[i].classList.contains("flag") && squares[i].classList.contains("bomb")) {
+                matches++;
+            }
+        }
+
+        if(matches === bombAmount) {
+            console.log("YOU WIN");
+            isGameOver = true;
+        }
+    }
 
 })

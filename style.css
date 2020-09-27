@@ -7,14 +7,17 @@
 }
 
 .grid div {
-    height: 40px;
-    width: 40px;
+    height: 38px;
+    width: 38px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: black;
 }
 
 .checked {
     background-color: red;
 }
 
-.bomb {
+/* .bomb {
     background-color: orange;
-}
+} */
