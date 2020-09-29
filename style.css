@@ -1,9 +1,20 @@
+body {
+    text-align: center;
+    font-family: 'Secular One', sans-serif;
+}
+
+#gameTitle {
+    font-family: 'Secular One', sans-serif;
+}
+
 .grid {
+    margin: auto;
     height: 400px;
     width: 400px;
     display: flex;
     flex-wrap: wrap;
     background-color: grey;
+
 }
 
 .grid div {
@@ -12,12 +23,20 @@
     border-style: solid;
     border-width: 1px;
     border-color: black;
+    font-size: 25px;
+}
+
+.grid div:hover {
+    background-color:lightgrey;
 }
 
 .checked {
-    background-color: red;
+    background-color: white;
 }
 
+.initiallyHidden {
+    display: none;
+}
 /* .bomb {
     background-color: orange;
 } */
