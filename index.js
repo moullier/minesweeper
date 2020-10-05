@@ -1,11 +1,24 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    const grid = document.querySelector(".grid");
+    const grid = document.querySelector("#gameBoard");
     let width = 10;
-    let bombAmount = 20;
+    let bombAmount = 10;
     let flags = 0;
     let squares = [];
     let isGameOver = false;
+    const startBtn = document.getElementById("startBtn");
+    startBtn.addEventListener("click", function(e) {
+        startNewGame();
+    })
+
+    function startNewGame() {
+        console.log("new game started");
+        flags = 0;
+        squares = [];
+        isGameOver = false;
+        grid.innerHTML = "";
+        createBoard();
+    }
 
     // create game board
     function createBoard() {
@@ -28,8 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 click(square);
             })
 
+            // right click action
             square.oncontextmenu = function(e) {
-                console.log("adding a flag?");
                 e.preventDefault();
                 addFlag(square);
             }
@@ -95,6 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     function addFlag(square) {
+
         if(isGameOver) {
             return;
         }
@@ -110,6 +124,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 square.innerHTML = "";
                 flags--;
             }
+        } else if(!square.classList.contains("checked") && flags === bombAmount) {
+            if(square.classList.contains("flag")) {
+                square.classList.remove("flag");
+                square.innerHTML = "";
+                flags--;
+            }
+
         }
 
     }
@@ -118,6 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // click on square actions
     function click(square) {
         let currentId = square.id;
+        console.log("clicking on square " + currentId);
 
         if(isGameOver) {
             return;
@@ -218,6 +240,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function gameOver(square) {
         isGameOver = true;
 
+        const gameStatus = document.getElementById("gameStatus");
+        gameStatus.innerHTML = "Game Over";
+        gameStatus.style.display= "block";
+        const startButton = document.getElementById("startBtn");
+        startButton.style.display= "inline-block";
+
         // show all the bombs
         squares.forEach(square => {
             if(square.classList.contains("bomb")) {
@@ -238,6 +266,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if(matches === bombAmount) {
             console.log("YOU WIN");
             isGameOver = true;
+
+            const gameStatus = document.getElementById("gameStatus");
+            gameStatus.innerHTML = "You Win!!";
+            gameStatus.style.display= "block";
+            const startButton = document.getElementById("startBtn");
+            startButton.style.display= "inline-block";
+
         }
     }
 
