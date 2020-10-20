@@ -1,5 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+    try {
+    
+        MicroModal.init({
+          awaitCloseAnimation: true,// set to false, to remove close animation
+          onShow: function(modal) {
+            console.log("micromodal open");
+          },
+          onClose: function(modal) {
+            console.log("micromodal close");
+          }
+        });
+        
+      } catch (e) {
+        console.log("micromodal error: ", e);
+    }
+
     const grid = document.querySelector("#gameBoard");
     let width = 10;
     let bombAmount = 10;
@@ -53,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let total = 0;
             const isLeftEdge = i % width === 0;
             const isRightEdge = i % width === width - 1;
-            console.log(i);
+            //console.log(i);
 
             if(squares[i].classList.contains("empty")) {
                 // check square to left for bomb
@@ -99,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 squares[i].setAttribute("data", total);
                 // squares[i].innerHTML = total;
 
-                console.log(squares[i]);
+                //console.log(squares[i]);
             }
         }
     }
